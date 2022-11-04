@@ -1,25 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { AuthenticateError, PublishPacket, Subscription } from 'aedes';
 import { IpClient } from '../types/aedes.types';
+import { RedisService } from 'src/modules/common/services/redis/redis.service';
 
 @Injectable()
 export class AuthService {
-  connectAuth(
+  constructor(private redisService: RedisService) {}
+
+  async connectAuth(
     client: IpClient,
     username: string,
     password: Buffer,
     callback: (error: AuthenticateError | null, success: boolean) => void,
   ) {
-    // console.log({
-    //   id: client.id,
-    //   username,
-    //   password: password.toString(),
-    // });
-    const whitelist = ['device:DEMO0001', 'device:DEMO0002'];
-    if (!whitelist.includes(client.id)) {
-      callback(null, false);
-    }
-    // console.log('connecting');
+    // console.log(this.redisService.getRedisClient().hKeys);
+
+    // if (
+    //   !username ||
+    //   !(await this.redisService.getRedisClient().HEXISTS('username', username))
+    //   // ||
+    //   // (await this.redisService.getRedisClient().HGET('username', username)) !==
+    //   //   password.toString()
+    // ) {
+    //   callback(null, false);
+    // }
+
     callback(null, true);
   }
 
@@ -32,10 +37,10 @@ export class AuthService {
       console.log('no $SYS');
       return callback(new Error('$SYS prefix topic is reserved'));
     }
-    if (packet.topic === '$thing/DEMO0002/$cmd/2') {
-      packet.payload = Buffer.from('overwrite packet payload');
-      console.log(packet);
-    }
+    // if (packet.topic === '$thing/DEMO0002/$cmd/2') {
+    //   packet.payload = Buffer.from('overwrite packet payload');
+    // }
+    // console.log(packet);
     callback(null);
   }
 
@@ -48,7 +53,7 @@ export class AuthService {
       return callback(new Error('wrong topic'));
     }
     if (subscription.topic === '$thing/DEMO0002/$cmd/2') {
-      callback(null, null);
+      callback(null, subscription);
     }
     console.log(subscription);
   }
