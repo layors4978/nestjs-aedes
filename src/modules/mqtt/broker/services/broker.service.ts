@@ -8,8 +8,8 @@ import { Aedes, ConnectPacket } from 'aedes';
 import { createServer } from 'aedes-server-factory';
 import { protocolDecoder } from 'aedes-protocol-decoder';
 import RedisPersistence from 'aedes-persistence-redis';
-import { AuthService } from './auth.service';
 import { IpClient } from '../types/aedes.types';
+import { AuthService } from './auth.service';
 import { RedisService } from 'src/modules/common/services/redis/redis.service';
 
 @Injectable()
@@ -17,8 +17,8 @@ export class BrokerService implements OnModuleInit, OnApplicationBootstrap {
   private aedesInstance: Aedes;
 
   constructor(
-    private authService: AuthService,
     private redisService: RedisService,
+    private authService: AuthService,
   ) {}
 
   onModuleInit() {
@@ -37,7 +37,7 @@ export class BrokerService implements OnModuleInit, OnApplicationBootstrap {
       persistence: RedisPersistence({
         port: 6379,
         host: '127.0.0.1',
-        family: 4, // 4 (IPv4) or 6 (IPv6)
+        // family: 4, // 4 (IPv4) or 6 (IPv6)
         db: 15,
       }),
       authenticate: this.authService.connectAuth,
@@ -69,7 +69,7 @@ export class BrokerService implements OnModuleInit, OnApplicationBootstrap {
     });
   }
 
-  // getAedesInstance(): Aedes {
-  //   return this.aedesInstance;
-  // }
+  getAedesInstance(): Aedes {
+    return this.aedesInstance;
+  }
 }

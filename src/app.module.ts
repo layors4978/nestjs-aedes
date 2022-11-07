@@ -3,7 +3,7 @@ import { BrokerModule } from './modules/mqtt/broker/broker.module';
 import { CommonModule } from './modules/common/common.module';
 
 @Module({
-  imports: [BrokerModule, CommonModule],
+  imports: [CommonModule, BrokerModule],
   controllers: [],
   providers: [],
 })

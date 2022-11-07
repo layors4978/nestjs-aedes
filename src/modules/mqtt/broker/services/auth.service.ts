@@ -5,34 +5,36 @@ import { RedisService } from 'src/modules/common/services/redis/redis.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private redisService: RedisService) {}
+  constructor(private redisService: RedisService) {
+    // console.log(this.redisService);
+  }
 
-  async connectAuth(
+  connectAuth = async (
     client: IpClient,
     username: string,
     password: Buffer,
     callback: (error: AuthenticateError | null, success: boolean) => void,
-  ) {
-    // console.log(this.redisService.getRedisClient().hKeys);
-
-    // if (
-    //   !username ||
-    //   !(await this.redisService.getRedisClient().HEXISTS('username', username))
-    //   // ||
-    //   // (await this.redisService.getRedisClient().HGET('username', username)) !==
-    //   //   password.toString()
-    // ) {
-    //   callback(null, false);
-    // }
+  ) => {
+    if (
+      !username ||
+      !(await this.redisService
+        .getRedisClient()
+        .HEXISTS('username', username)) ||
+      (await this.redisService.getRedisClient().HGET('username', username)) !==
+        password.toString()
+    ) {
+      callback(null, false);
+    }
 
     callback(null, true);
-  }
+  };
 
   publishAuth(
     client: IpClient,
     packet: PublishPacket,
     callback: (error?: Error | null) => void,
   ) {
+    // console.log(this.redisService.getRedisClient());
     if (packet.topic.startsWith('$SYS')) {
       console.log('no $SYS');
       return callback(new Error('$SYS prefix topic is reserved'));
@@ -52,9 +54,10 @@ export class AuthService {
     if (subscription.topic === '$thing/DEMO0002/$cmd/1') {
       return callback(new Error('wrong topic'));
     }
-    if (subscription.topic === '$thing/DEMO0002/$cmd/2') {
-      callback(null, subscription);
-    }
+    // if (subscription.topic === '$thing/DEMO0002/$cmd/2') {
+    //   callback(null, subscription);
+    // }
+    callback(null, subscription);
     console.log(subscription);
   }
 }

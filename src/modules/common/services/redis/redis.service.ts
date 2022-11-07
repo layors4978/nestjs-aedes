@@ -1,5 +1,5 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { createClient } from 'redis';
+import { Injectable } from '@nestjs/common';
+import { createClient, RedisClientType } from 'redis';
 
 const connectConfig = {
   host: '127.0.0.1',
@@ -8,13 +8,17 @@ const connectConfig = {
 };
 
 @Injectable()
-export class RedisService implements OnModuleInit {
-  private client;
+export class RedisService {
+  private client: RedisClientType;
 
-  onModuleInit() {
+  constructor() {
+    this.startRedis();
+  }
+
+  async startRedis() {
     this.client = createClient(connectConfig);
-    this.client.connect();
-    this.client.HSET('username', 'myuser', 'qwerasdf');
+    await this.client.connect();
+    await this.client.HSET('username', 'myuser', 'qwerasdf');
     console.log('redis connected');
   }
 
