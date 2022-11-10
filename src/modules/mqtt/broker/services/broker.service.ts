@@ -65,6 +65,9 @@ export class BrokerService implements OnModuleInit, OnApplicationBootstrap {
         //   return [key, payload.key];
         // });
         await this.redisService.getRedisClient().HSET(packet.topic, payload);
+        await this.redisService
+          .getRedisClient()
+          .SETEX(`healthCheck:${client.id}`, 60, Date.now().toString());
       }
     });
   }
